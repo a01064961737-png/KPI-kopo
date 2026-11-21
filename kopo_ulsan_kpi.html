@@ -1,0 +1,1605 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#1B365D" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="KOPO-Ulsan KPI" />
+  <title>KOPO-Ulsan KPI | 한국폴리텍 울산캠퍼스 총학생회 성과 관리 시스템</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%231B365D'/%3E%3Crect x='14' y='34' width='8' height='16' rx='2' fill='%2360A5FA'/%3E%3Crect x='28' y='26' width='8' height='24' rx='2' fill='%2334D399'/%3E%3Crect x='42' y='16' width='8' height='34' rx='2' fill='%23FBBF24'/%3E%3C/svg%3E" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: #f1f5f9;
+      color: #0f172a;
+    }
+    .brand-font {
+      font-family: 'Plus Jakarta Sans', 'Noto Sans KR', sans-serif;
+    }
+    .tabular-nums { font-variant-numeric: tabular-nums; }
+    .modal-backdrop { background-color: rgba(15, 23, 42, 0.6); backdrop-filter: blur(3px); }
+    .login-bg {
+      background: radial-gradient(circle at 15% 20%, rgba(56, 189, 248, 0.22), transparent 40%),
+                  radial-gradient(circle at 85% 80%, rgba(16, 185, 129, 0.18), transparent 42%),
+                  linear-gradient(135deg, #0b192c 0%, #1B365D 55%, #122644 100%);
+    }
+    .brand-glow {
+      box-shadow: 0 0 36px rgba(56, 189, 248, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-6px); }
+      40%, 80% { transform: translateX(6px); }
+    }
+    .animate-shake { animation: shake 0.35s ease-in-out; }
+    @media print {
+      body { background-color: #ffffff !important; }
+      .no-print { display: none !important; }
+      #loginGate { display: none !important; }
+      #appContainer { display: flex !important; }
+      .card-shadow { box-shadow: none !important; border: 1px solid #cbd5e1 !important; }
+      .tab-panel { display: block !important; margin-bottom: 24px; }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+  <!-- ===================================================================== -->
+  <!-- 1. KOPO-Ulsan KPI 임원 전용 로그인 게이트 화면 -->
+  <!-- ===================================================================== -->
+  <div id="loginGate" class="fixed inset-0 z-50 login-bg flex items-center justify-center p-4 overflow-y-auto">
+    <div id="loginCard" class="w-full max-w-md bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/30 overflow-hidden my-auto">
+      <!-- 상단 KOPO-Ulsan KPI 공식 상표 배너 -->
+      <div class="bg-gradient-to-br from-[#0f2342] via-[#1B365D] to-[#23487a] px-6 pt-8 pb-7 text-center relative overflow-hidden">
+        <div class="absolute -top-12 -right-12 w-36 h-36 rounded-full bg-sky-400/10 blur-xl"></div>
+        <div class="absolute -bottom-12 -left-12 w-36 h-36 rounded-full bg-emerald-400/10 blur-xl"></div>
+
+        <!-- KOPO-Ulsan KPI 커스텀 엠블럼 SVG -->
+        <div class="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-b from-white/15 to-white/5 border border-white/25 brand-glow mb-4 relative">
+          <svg class="w-12 h-12" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M32 6L54 16V31C54 44.8 44.6 56.9 32 60C19.4 56.9 10 44.8 10 31V16L32 6Z" fill="url(#shieldGrad)" stroke="#7DD3FC" stroke-width="2"/>
+            <rect x="19" y="34" width="6" height="14" rx="2" fill="#93C5FD"/>
+            <rect x="29" y="27" width="6" height="21" rx="2" fill="#34D399"/>
+            <rect x="39" y="19" width="6" height="29" rx="2" fill="#FBBF24"/>
+            <path d="M18 30L29 22L36 25L46 14" stroke="#FFFFFF" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M40 14H46V20" stroke="#FFFFFF" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+            <defs>
+              <linearGradient id="shieldGrad" x1="10" y1="6" x2="54" y2="60" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#1E3A8A" stop-opacity="0.85"/>
+                <stop offset="1" stop-color="#0F172A" stop-opacity="0.95"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+
+        <div class="flex items-center justify-center gap-1.5">
+          <span class="brand-font text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
+            KOPO-Ulsan <span class="text-transparent bg-clip-text bg-gradient-to-r from-sky-300 via-emerald-300 to-amber-300">KPI</span>
+          </span>
+        </div>
+        <p class="text-xs font-semibold text-sky-200/90 tracking-wider uppercase mt-1">
+          Korea Polytechnics Ulsan Student Council
+        </p>
+        <div class="mt-3 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 border border-white/15 text-[11px] text-slate-200">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+          <span>한국폴리텍 울산캠퍼스 총학생회 임원 전용 시스템</span>
+        </div>
+      </div>
+
+      <!-- 로그인 입력 폼 -->
+      <form id="loginForm" onsubmit="handleLoginSubmit(event)" class="p-6 sm:p-7 space-y-4">
+        <div>
+          <label for="loginRoleSelect" class="block text-xs font-extrabold text-slate-700 mb-1.5">승인된 총학생회 임원 선택 (9인 한정)</label>
+          <select id="loginRoleSelect" class="w-full text-sm font-bold text-slate-800 border border-slate-300 rounded-xl px-3.5 py-3 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#1B365D] transition">
+            <option value="">-- 직책 및 성명을 선택하세요 --</option>
+            <option value="학생회장">학생회장 정우성 · 회장단</option>
+            <option value="부회장">부회장 정민규 · 회장단</option>
+            <option value="대의원장">대의원장 박선민 · 에너지산업설비과</option>
+            <option value="학술부장">학술부장 안태양 · 전기과</option>
+            <option value="문화부장">문화부장 홍예섭 · 에너지산업설비과</option>
+            <option value="산학협력부장">산학협력부장 정우진 · 에너지산업설비과</option>
+            <option value="총무부장">총무부장 김준우 · 기계과</option>
+            <option value="홍보소통부장">홍보소통부장 남주현 · 에너지산업설비과</option>
+            <option value="봉사부장">봉사부장 정호준 · 에너지산업설비과</option>
+          </select>
+        </div>
+
+        <div>
+          <div class="flex items-center justify-between mb-1.5">
+            <label for="loginPinInput" class="block text-xs font-extrabold text-slate-700">임원 접속 비밀번호 (PIN)</label>
+            <span class="text-[11px] text-slate-400">초기 비밀번호: <strong class="text-slate-600">2026</strong></span>
+          </div>
+          <div class="relative">
+            <input id="loginPinInput" type="password" inputmode="numeric" placeholder="2026 입력" class="w-full text-sm font-bold tracking-widest border border-slate-300 rounded-xl px-3.5 py-3 pr-14 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#1B365D] transition" />
+            <button type="button" onclick="togglePinVisibility()" class="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-500 hover:text-slate-800 px-1.5 py-1">
+              표시
+            </button>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between pt-0.5">
+          <label class="inline-flex items-center gap-2 text-xs font-bold text-slate-700 cursor-pointer select-none">
+            <input id="autoLoginCheck" type="checkbox" checked class="w-4 h-4 rounded text-[#1B365D] focus:ring-[#1B365D]" />
+            <span>자동 로그인 유지 (다음 접속 시 바로 입장)</span>
+          </label>
+        </div>
+
+        <p id="loginErrorMsg" class="hidden text-xs font-bold text-rose-600 bg-rose-50 border border-rose-200 rounded-lg px-3 py-2 text-center">
+          직책을 선택하고 올바른 비밀번호(초기값: 2026)를 입력해 주세요.
+        </p>
+
+        <button type="button" onclick="handleLoginSubmit()" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-[#1B365D] to-[#264b80] hover:from-[#142947] hover:to-[#1e3d69] text-white font-extrabold text-sm shadow-lg shadow-blue-950/20 transition transform active:scale-[0.99] cursor-pointer">
+          KOPO-Ulsan KPI 대시보드 입장하기
+        </button>
+
+        <div class="pt-2 border-t border-slate-100 text-center">
+          <p class="text-[11px] text-slate-400 leading-relaxed">
+            본 시스템은 2026.11.12 업무분장표에 등록된 총학생회 회장단·대의원장 및 7개 부서장만 접근할 수 있습니다.
+          </p>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ===================================================================== -->
+  <!-- 2. 메인 대시보드 애플리케이션 컨테이너 -->
+  <!-- ===================================================================== -->
+  <div id="appContainer" class="hidden min-h-screen flex-col">
+
+    <!-- 상단 네비게이션 헤더 -->
+    <header class="bg-[#1B365D] text-white shadow-md sticky top-0 z-30">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center shrink-0">
+              <svg class="w-6 h-6" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M32 6L54 16V31C54 44.8 44.6 56.9 32 60C19.4 56.9 10 44.8 10 31V16L32 6Z" fill="#0F172A" stroke="#7DD3FC" stroke-width="2.5"/>
+                <rect x="19" y="34" width="6" height="14" rx="2" fill="#93C5FD"/>
+                <rect x="29" y="27" width="6" height="21" rx="2" fill="#34D399"/>
+                <rect x="39" y="19" width="6" height="29" rx="2" fill="#FBBF24"/>
+              </svg>
+            </div>
+            <div>
+              <div class="flex flex-wrap items-center gap-2">
+                <span class="brand-font text-sm sm:text-base font-extrabold tracking-tight text-white">
+                  KOPO-Ulsan <span class="text-sky-300">KPI</span>
+                </span>
+                <span class="text-[11px] text-slate-300 hidden sm:inline">| 한국폴리텍 울산캠퍼스 총학생회</span>
+                <span id="syncStatusBadge" class="inline-flex items-center gap-1.5 px-2 py-0.5 text-[11px] font-semibold rounded-full bg-emerald-500/20 border border-emerald-300/40 text-emerald-100">
+                  <span id="syncDot" class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                  <span id="syncStatusText">실시간 동기화 연결됨</span>
+                </span>
+              </div>
+              <div class="flex flex-wrap items-center gap-2 mt-0.5 text-xs text-blue-100">
+                <span>접속 임원: <strong id="currentUserBadge" class="text-amber-300">-</strong></span>
+                <span class="text-white/30">•</span>
+                <span class="text-[11px] text-slate-300">업무분장 시행일: 2026. 11. 12.</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-1.5 sm:gap-2 no-print">
+            <div class="flex items-center bg-[#122644] border border-blue-300/25 rounded-lg px-2 py-1 text-xs">
+              <span class="text-slate-300 mr-1">공유방:</span>
+              <input id="roomCodeInput" type="text" value="kopo-ulsan-2026" class="bg-transparent text-white font-bold w-24 sm:w-28 focus:outline-none border-b border-blue-400/50" />
+              <button onclick="changeRoomCode()" class="ml-1 px-1.5 py-0.5 bg-blue-600 hover:bg-blue-500 rounded text-[11px] font-semibold transition">연결</button>
+              <button onclick="copyShareCode()" class="ml-1 px-1.5 py-0.5 bg-slate-700 hover:bg-slate-600 rounded text-[11px] font-semibold transition">복사</button>
+            </div>
+
+            <button onclick="openKpiModal()" class="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-bold rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 transition shadow-sm">
+              + KPI 추가
+            </button>
+
+            <button onclick="exportAllDepartmentsExcel()" class="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-bold rounded-lg bg-amber-400 hover:bg-amber-300 text-slate-950 transition shadow-sm">
+              부서별 통합 엑셀
+            </button>
+
+            <button onclick="openPinModal()" class="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold rounded-lg bg-white/10 hover:bg-white/20 text-white border border-white/20 transition">
+              비밀번호 관리
+            </button>
+
+            <button onclick="exportJSONBackup()" class="inline-flex items-center gap-1 px-2 py-1.5 text-xs font-semibold rounded-lg bg-white/10 hover:bg-white/20 text-white border border-white/20 transition">
+              백업
+            </button>
+
+            <label class="inline-flex items-center gap-1 px-2 py-1.5 text-xs font-semibold rounded-lg bg-white/10 hover:bg-white/20 text-white border border-white/20 transition cursor-pointer">
+              복원
+              <input type="file" accept=".json" onchange="importJSONBackup(event)" class="hidden" />
+            </label>
+
+            <button onclick="window.print()" class="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold rounded-lg bg-white text-[#1B365D] hover:bg-slate-100 transition shadow-sm">
+              인쇄/PDF
+            </button>
+
+            <button onclick="handleLogout()" class="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-bold rounded-lg bg-rose-500/85 hover:bg-rose-500 text-white transition">
+              로그아웃
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- 메인 컨테이너 -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+
+      <!-- 상단 요약 지표 4개 카드 -->
+      <section class="grid grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4">
+        <div class="bg-white rounded-xl p-4 sm:p-5 border border-slate-200 card-shadow">
+          <p class="text-xs font-semibold text-slate-500">전체 등록 KPI</p>
+          <div class="mt-2 flex items-baseline justify-between">
+            <span id="statTotalCount" class="text-2xl sm:text-3xl font-extrabold text-[#1B365D] tabular-nums">0개</span>
+            <span class="text-xs text-slate-400">회장단 + 7개 부서</span>
+          </div>
+        </div>
+        <div class="bg-white rounded-xl p-4 sm:p-5 border border-slate-200 card-shadow">
+          <p class="text-xs font-semibold text-slate-500">전체 평균 달성률</p>
+          <div class="mt-2 flex items-baseline justify-between">
+            <span id="statAvgRate" class="text-2xl sm:text-3xl font-extrabold text-blue-600 tabular-nums">0.0%</span>
+            <span id="statRateBadge" class="text-xs font-semibold px-2 py-0.5 rounded-full bg-blue-50 text-blue-700">집계중</span>
+          </div>
+        </div>
+        <div class="bg-white rounded-xl p-4 sm:p-5 border border-slate-200 card-shadow">
+          <p class="text-xs font-semibold text-slate-500">완료된 핵심 지표</p>
+          <div class="mt-2 flex items-baseline justify-between">
+            <span id="statCompletedCount" class="text-2xl sm:text-3xl font-extrabold text-emerald-600 tabular-nums">0개</span>
+            <span id="statInProgressText" class="text-xs text-slate-500">진행중 0개</span>
+          </div>
+        </div>
+        <div class="bg-white rounded-xl p-4 sm:p-5 border border-slate-200 card-shadow">
+          <p class="text-xs font-semibold text-slate-500">누적 활동 로그 / 공유업무</p>
+          <div class="mt-2 flex items-baseline justify-between">
+            <span id="statActivityCount" class="text-2xl sm:text-3xl font-extrabold text-indigo-600 tabular-nums">0건</span>
+            <span class="text-[11px] text-slate-400">실시간 공유중</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- 부서별 성과지표 엑셀(.xlsx) 바로 내보내기 전용 섹션 -->
+      <section class="bg-white rounded-xl p-4 sm:p-5 border border-slate-200 card-shadow no-print">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 pb-3 border-b border-slate-100">
+          <div>
+            <h2 class="text-sm sm:text-base font-extrabold text-[#1B365D] flex items-center gap-2">
+              <span>📊 부서별 성과지표 엑셀(.xlsx) 바로 내보내기</span>
+              <span class="text-[11px] font-semibold px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">시트 자동 분리</span>
+            </h2>
+            <p class="text-xs text-slate-500 mt-0.5">
+              각 직책·부서 칸을 클릭하면 해당 부서의 성과지표와 활동 로그가 담긴 전용 엑셀(.xlsx) 파일이 즉시 다운로드됩니다.
+            </p>
+          </div>
+          <button onclick="exportAllDepartmentsExcel()" class="px-3.5 py-2 rounded-lg bg-[#1B365D] hover:bg-[#27497a] text-white text-xs font-bold transition shadow-sm">
+            전체 9개 부서 시트 통합 엑셀(.xlsx) 받기
+          </button>
+        </div>
+        <div id="deptExcelExportGrid" class="mt-3.5 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2.5"></div>
+      </section>
+
+      <!-- 메인 탭 내비게이션 -->
+      <div class="bg-white rounded-xl border border-slate-200 card-shadow overflow-hidden">
+        <div class="flex flex-wrap border-b border-slate-200 bg-slate-50/80 px-2 pt-2 gap-1 no-print">
+          <button onclick="switchTab('kpi')" id="tabBtn-kpi" class="tab-btn px-4 py-2.5 text-xs sm:text-sm font-bold rounded-t-lg border-b-2 border-[#1B365D] bg-white text-[#1B365D]">
+            📋 부서별 KPI 관리대장
+          </button>
+          <button onclick="switchTab('board')" id="tabBtn-board" class="tab-btn px-4 py-2.5 text-xs sm:text-sm font-semibold rounded-t-lg border-b-2 border-transparent text-slate-600 hover:text-slate-900">
+            🤝 실시간 업무 공유 보드 <span id="boardBadge" class="ml-1 px-1.5 py-0.2 text-[11px] rounded-full bg-blue-100 text-blue-700">0</span>
+          </button>
+          <button onclick="switchTab('log')" id="tabBtn-log" class="tab-btn px-4 py-2.5 text-xs sm:text-sm font-semibold rounded-t-lg border-b-2 border-transparent text-slate-600 hover:text-slate-900">
+            🗓️ 월별 실적 로그 <span id="logBadge" class="ml-1 px-1.5 py-0.2 text-[11px] rounded-full bg-slate-200 text-slate-700">0</span>
+          </button>
+          <button onclick="switchTab('overview')" id="tabBtn-overview" class="tab-btn px-4 py-2.5 text-xs sm:text-sm font-semibold rounded-t-lg border-b-2 border-transparent text-slate-600 hover:text-slate-900">
+            📈 부서별 달성률 차트·요약
+          </button>
+        </div>
+
+        <!-- TAB 1: 부서별 KPI 관리대장 -->
+        <div id="tabPanel-kpi" class="tab-panel p-4 sm:p-6 space-y-4">
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 no-print">
+            <div class="flex flex-wrap items-center gap-2">
+              <select id="filterRole" onchange="renderAll()" class="text-xs sm:text-sm border border-slate-300 rounded-lg px-3 py-2 bg-white font-medium focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <option value="ALL">전체 직책 / 부서 (9개)</option>
+              </select>
+              <select id="filterStatus" onchange="renderAll()" class="text-xs sm:text-sm border border-slate-300 rounded-lg px-3 py-2 bg-white font-medium focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <option value="ALL">전체 진행 상태</option>
+                <option value="진행중">진행중</option>
+                <option value="완료">완료</option>
+                <option value="진행전">진행전</option>
+                <option value="보류">보류</option>
+              </select>
+              <input id="searchKpiInput" type="text" oninput="renderAll()" placeholder="지표명, 담당자, 세부 기준 검색..." class="text-xs sm:text-sm border border-slate-300 rounded-lg px-3 py-2 w-56 sm:w-64 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            </div>
+            <div class="flex items-center gap-2">
+              <button onclick="exportFilteredCSV()" class="px-3 py-2 text-xs font-semibold rounded-lg border border-slate-300 bg-white hover:bg-slate-50 text-slate-700">
+                현재 목록 CSV 저장
+              </button>
+              <button onclick="resetToDefaultData()" class="px-3 py-2 text-xs font-semibold rounded-lg border border-rose-200 bg-rose-50 hover:bg-rose-100 text-rose-700">
+                초기 데이터 복구
+              </button>
+            </div>
+          </div>
+
+          <div class="overflow-x-auto border border-slate-200 rounded-xl">
+            <table class="min-w-full divide-y divide-slate-200 text-xs sm:text-sm">
+              <thead class="bg-[#1B365D] text-white">
+                <tr>
+                  <th class="px-3 py-3 text-left font-bold whitespace-nowrap">직책 / 담당자</th>
+                  <th class="px-3 py-3 text-left font-bold">KPI 지표명 및 측정 기준</th>
+                  <th class="px-3 py-3 text-right font-bold whitespace-nowrap">목표치</th>
+                  <th class="px-3 py-3 text-right font-bold whitespace-nowrap">현재 실적 (바로 수정)</th>
+                  <th class="px-3 py-3 text-left font-bold whitespace-nowrap w-40">달성률</th>
+                  <th class="px-3 py-3 text-center font-bold whitespace-nowrap">진행 상태</th>
+                  <th class="px-3 py-3 text-center font-bold whitespace-nowrap">기한</th>
+                  <th class="px-3 py-3 text-center font-bold whitespace-nowrap no-print">관리</th>
+                </tr>
+              </thead>
+              <tbody id="kpiTableBody" class="divide-y divide-slate-200 bg-white"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- TAB 2: 실시간 업무 공유 보드 -->
+        <div id="tabPanel-board" class="tab-panel hidden p-4 sm:p-6 space-y-5">
+          <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 no-print">
+            <h3 class="text-sm font-extrabold text-[#1B365D] mb-3">새 업무 공유 / 부서 협조 요청 등록</h3>
+            <form onsubmit="handleAddBoardPost(event)" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-2.5">
+              <select id="boardAuthorRole" required class="text-xs sm:text-sm border border-slate-300 rounded-lg px-3 py-2 bg-white">
+                <option value="">작성자(직책/성명) 선택</option>
+              </select>
+              <select id="boardTargetRole" required class="text-xs sm:text-sm border border-slate-300 rounded-lg px-3 py-2 bg-white">
+                <option value="전체 임원">수신: 전체 임원</option>
+              </select>
+              <select id="boardPriority" class="text-xs sm:text-sm border border-slate-300 rounded-lg px-3 py-2 bg-white">
+                <option value="일반">중요도: 일반</option>
+                <option value="공지">중요도: 공지</option>
+                <option value="긴급">중요도: 긴급</option>
+              </select>
+              <input id="boardTitle" type="text" required placeholder="업무 제목 (예: 체육대회 협찬서 취합 요청)" class="lg:col-span-2 text-xs sm:text-sm border border-slate-300 rounded-lg px-3 py-2 bg-white" />
+              <button type="submit" class="px-4 py-2 rounded-lg bg-[#1B365D] hover:bg-[#27497a] text-white text-xs sm:text-sm font-bold transition">
+                공유 등록
+              </button>
+              <input id="boardContent" type="text" required placeholder="상세 전달 내용, 마감 기한, 증빙 드라이브 링크 등을 입력하세요..." class="sm:col-span-2 lg:col-span-6 text-xs sm:text-sm border border-slate-300 rounded-lg px-3 py-2 bg-white" />
+            </form>
+          </div>
+          <div id="boardListContainer" class="grid grid-cols-1 md:grid-cols-2 gap-3.5"></div>
+        </div>
+
+        <!-- TAB 3: 월별 실적 로그 -->
+        <div id="tabPanel-log" class="tab-panel hidden p-4 sm:p-6 space-y-5">
+          <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 no-print">
+            <h3 class="text-sm font-extrabold text-[#1B365D] mb-3">활동 실적 및 증빙 로그 기록 (연관 KPI 자동 합산 가능)</h3>
+            <form onsubmit="handleAddLog(event)" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-2.5">
+              <input id="logDate" type="date" required class="text-xs sm:text-sm border border-slate-300 rounded-lg px-3 py-2 bg-white" />
+              <select id="logRole" onchange="onLogRoleChange()" required class="text-xs sm:text-sm border border-slate-300 rounded-lg px-3 py-2 bg-white">
+                <option value="">담당 직책/부서 선택</option>
+              </select>
+              <input id="logManager" type="text" readonly placeholder="담당자 자동입력" class="text-xs sm:text-sm border border-slate-200 rounded-lg px-3 py-2 bg-slate-100 text-slate-600 font-semibold" />
+              <select id="logKpiId" class="lg:col-span-3 text-xs sm:text-sm border border-slate-300 rounded-lg px-3 py-2 bg-white">
+                <option value="">연관 KPI 지표 선택 (선택 사항)</option>
+              </select>
+
+              <input id="logTitle" type="text" required placeholder="활동 / 행사명 (예: 울산 에너지 기업 현장 견학)" class="lg:col-span-2 text-xs sm:text-sm border border-slate-300 rounded-lg px-3 py-2 bg-white" />
+              <input id="logParticipants" type="number" min="0" placeholder="참여 인원(명)" class="text-xs sm:text-sm border border-slate-300 rounded-lg px-3 py-2 bg-white" />
+              <input id="logSatisfaction" type="number" step="0.1" min="0" max="5" placeholder="만족도(5점 만점)" class="text-xs sm:text-sm border border-slate-300 rounded-lg px-3 py-2 bg-white" />
+              <input id="logIncrement" type="number" step="0.1" value="1" placeholder="KPI 실적 가산값" class="text-xs sm:text-sm border border-slate-300 rounded-lg px-3 py-2 bg-white" />
+              <button type="submit" class="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs sm:text-sm font-bold transition">
+                로그 저장
+              </button>
+
+              <div class="sm:col-span-2 lg:col-span-6 flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-1">
+                <input id="logNote" type="text" placeholder="증빙 자료 요약 또는 구글 드라이브 링크..." class="flex-1 text-xs sm:text-sm border border-slate-300 rounded-lg px-3 py-2 bg-white" />
+                <label class="inline-flex items-center gap-2 text-xs font-semibold text-slate-700 cursor-pointer select-none">
+                  <input id="logAutoAddKpi" type="checkbox" checked class="rounded text-blue-600 focus:ring-blue-500" />
+                  저장 시 선택한 연관 KPI 현재 실적에 가산값 자동 합산
+                </label>
+              </div>
+            </form>
+          </div>
+
+          <div class="overflow-x-auto border border-slate-200 rounded-xl">
+            <table class="min-w-full divide-y divide-slate-200 text-xs sm:text-sm">
+              <thead class="bg-[#1B365D] text-white">
+                <tr>
+                  <th class="px-3 py-3 text-center font-bold whitespace-nowrap">활동일자</th>
+                  <th class="px-3 py-3 text-center font-bold whitespace-nowrap">직책 / 담당자</th>
+                  <th class="px-3 py-3 text-left font-bold">활동 / 행사명</th>
+                  <th class="px-3 py-3 text-left font-bold">연관 KPI</th>
+                  <th class="px-3 py-3 text-center font-bold whitespace-nowrap">참여 인원</th>
+                  <th class="px-3 py-3 text-center font-bold whitespace-nowrap">만족도</th>
+                  <th class="px-3 py-3 text-left font-bold">증빙 / 비고</th>
+                  <th class="px-3 py-3 text-center font-bold no-print">삭제</th>
+                </tr>
+              </thead>
+              <tbody id="logTableBody" class="divide-y divide-slate-200 bg-white"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- TAB 4: 부서별 달성률 차트·요약 -->
+        <div id="tabPanel-overview" class="tab-panel hidden p-4 sm:p-6 space-y-6">
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="border border-slate-200 rounded-xl p-4 sm:p-5 bg-white">
+              <h3 class="text-sm sm:text-base font-extrabold text-[#1B365D] mb-4">직책·부서별 KPI 평균 달성률 그래프</h3>
+              <div id="deptBarChartContainer" class="space-y-3.5"></div>
+            </div>
+            <div class="border border-slate-200 rounded-xl p-4 sm:p-5 bg-white">
+              <h3 class="text-sm sm:text-base font-extrabold text-[#1B365D] mb-4">임원 및 7개 부서 업무분장 요약</h3>
+              <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-slate-200 text-xs">
+                  <thead class="bg-slate-100 text-slate-700">
+                    <tr>
+                      <th class="px-2.5 py-2 text-left font-bold">직책</th>
+                      <th class="px-2.5 py-2 text-center font-bold">성명</th>
+                      <th class="px-2.5 py-2 text-center font-bold">지표/완료</th>
+                      <th class="px-2.5 py-2 text-right font-bold">달성률</th>
+                      <th class="px-2.5 py-2 text-center font-bold no-print">엑셀</th>
+                    </tr>
+                  </thead>
+                  <tbody id="deptSummaryTableBody" class="divide-y divide-slate-200"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- KPI 추가 / 상세 수정 모달 -->
+  <div id="kpiModal" class="fixed inset-0 z-50 hidden items-center justify-center modal-backdrop p-4">
+    <div class="bg-white rounded-2xl max-w-lg w-full shadow-2xl border border-slate-200 overflow-hidden">
+      <div class="bg-[#1B365D] text-white px-5 py-4 flex items-center justify-between">
+        <h3 id="kpiModalTitle" class="text-base font-extrabold">새 KPI 지표 추가 / 성과 입력</h3>
+        <button onclick="closeKpiModal()" class="text-slate-300 hover:text-white text-xl leading-none">&times;</button>
+      </div>
+      <form onsubmit="handleSaveKpiModal(event)" class="p-5 space-y-3.5 text-xs sm:text-sm">
+        <input type="hidden" id="modalKpiId" />
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">대상 직책 / 부서 *</label>
+            <select id="modalRole" onchange="onModalRoleChange()" required class="w-full border border-slate-300 rounded-lg px-3 py-2 bg-white"></select>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">담당자 *</label>
+            <input id="modalManager" type="text" required class="w-full border border-slate-300 rounded-lg px-3 py-2 bg-slate-50 font-semibold" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">소속 학과</label>
+            <input id="modalDept" type="text" class="w-full border border-slate-300 rounded-lg px-3 py-2 bg-slate-50" />
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">KPI 성과 지표명 *</label>
+          <input id="modalName" type="text" required placeholder="예: 기업 탐방·기술 체험 프로그램 운영" class="w-full border border-slate-300 rounded-lg px-3 py-2" />
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">세부 측정 기준</label>
+          <input id="modalCriteria" type="text" placeholder="예: 현장 견학 및 산업체 연계 교육 연간 횟수" class="w-full border border-slate-300 rounded-lg px-3 py-2" />
+        </div>
+
+        <div class="grid grid-cols-3 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">단위 *</label>
+            <input id="modalUnit" type="text" required value="회" placeholder="%, 회, 건, 점" class="w-full border border-slate-300 rounded-lg px-3 py-2" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">목표치 *</label>
+            <input id="modalTarget" type="number" step="0.1" required oninput="updateModalPreview()" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-right font-bold" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">현재 실적 *</label>
+            <input id="modalActual" type="number" step="0.1" required oninput="updateModalPreview()" class="w-full border border-slate-300 rounded-lg px-3 py-2 text-right font-bold text-blue-700" />
+          </div>
+        </div>
+
+        <div class="bg-slate-50 border border-slate-200 rounded-lg p-3">
+          <div class="flex justify-between text-xs font-bold mb-1">
+            <span class="text-slate-600">예상 달성률 미리보기</span>
+            <span id="modalPreviewRate" class="text-[#1B365D]">0.0%</span>
+          </div>
+          <div class="w-full bg-slate-200 rounded-full h-2 overflow-hidden">
+            <div id="modalPreviewBar" class="bg-blue-600 h-2 rounded-full transition-all" style="width: 0%"></div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">진행 상태</label>
+            <select id="modalStatus" class="w-full border border-slate-300 rounded-lg px-3 py-2 bg-white">
+              <option value="진행전">진행전</option>
+              <option value="진행중" selected>진행중</option>
+              <option value="완료">완료</option>
+              <option value="보류">보류</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">목표 기한</label>
+            <input id="modalDue" type="text" value="2027-11-30" placeholder="2027-11-30 또는 상시" class="w-full border border-slate-300 rounded-lg px-3 py-2" />
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">비고 / 증빙 링크</label>
+          <input id="modalNote" type="text" placeholder="드라이브 링크 또는 세부 메모" class="w-full border border-slate-300 rounded-lg px-3 py-2" />
+        </div>
+
+        <div class="flex justify-end gap-2 pt-2 border-t border-slate-100">
+          <button type="button" onclick="closeKpiModal()" class="px-4 py-2 rounded-lg border border-slate-300 text-slate-700 font-semibold hover:bg-slate-50">취소</button>
+          <button type="submit" class="px-5 py-2 rounded-lg bg-[#1B365D] hover:bg-[#27497a] text-white font-bold shadow-sm">저장 및 실시간 반영</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 비밀번호(PIN) 관리 모달 -->
+  <div id="pinModal" class="fixed inset-0 z-50 hidden items-center justify-center modal-backdrop p-4">
+    <div class="bg-white rounded-2xl max-w-md w-full shadow-2xl border border-slate-200 overflow-hidden">
+      <div class="bg-[#1B365D] text-white px-5 py-4 flex items-center justify-between">
+        <h3 class="text-base font-extrabold">임원 전용 비밀번호(PIN) 관리</h3>
+        <button onclick="closePinModal()" class="text-slate-300 hover:text-white text-xl leading-none">&times;</button>
+      </div>
+      <div class="p-5 space-y-4 text-xs sm:text-sm">
+        <form onsubmit="handleChangeMyPin(event)" class="space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-200">
+          <p class="font-extrabold text-[#1B365D]">내 계정 비밀번호 변경 (<span id="pinModalUserLabel"></span>)</p>
+          <div>
+            <label class="block text-xs font-bold text-slate-600 mb-1">새 비밀번호 (4자리 이상 권장)</label>
+            <input id="newPinInput" type="password" required minlength="4" placeholder="새 비밀번호 입력" class="w-full border border-slate-300 rounded-lg px-3 py-2 bg-white" />
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-600 mb-1">새 비밀번호 확인</label>
+            <input id="confirmPinInput" type="password" required minlength="4" placeholder="새 비밀번호 다시 입력" class="w-full border border-slate-300 rounded-lg px-3 py-2 bg-white" />
+          </div>
+          <button type="submit" class="w-full py-2.5 rounded-lg bg-[#1B365D] hover:bg-[#27497a] text-white font-bold">내 비밀번호 저장</button>
+        </form>
+
+        <div id="adminPinResetBox" class="hidden space-y-2.5 pt-2 border-t border-slate-200">
+          <p class="text-xs font-extrabold text-slate-700">회장단·대의원장 권한: 임원 비밀번호 초기화 (2026으로 복구)</p>
+          <div class="flex gap-2">
+            <select id="resetTargetRoleSelect" class="flex-1 text-xs border border-slate-300 rounded-lg px-2.5 py-2 bg-white"></select>
+            <button type="button" onclick="handleResetMemberPin()" class="px-3 py-2 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold">초기화</button>
+          </div>
+        </div>
+
+        <div class="flex justify-end">
+          <button type="button" onclick="closePinModal()" class="px-4 py-2 rounded-lg border border-slate-300 text-slate-700 font-semibold">닫기</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 토스트 알림 -->
+  <div id="toastContainer" class="fixed bottom-5 right-5 z-50 space-y-2 pointer-events-none"></div>
+
+  <script>
+    const ROLES_META = [
+      { role: '학생회장', manager: '정우성', dept: '-', isAdmin: true, summary: '총학생회 공약 총괄, 교학처·대외 소통 및 주요 사업 지휘' },
+      { role: '부회장', manager: '정민규', dept: '-', isAdmin: true, summary: '회장 보좌, 부서별 KPI·집행 현황 점검 및 행사 운영 조율' },
+      { role: '대의원장', manager: '박선민', dept: '에너지산업설비과', isAdmin: true, summary: '연간 일정·공약 관리, 정기·과대표 회의 운영 및 회의록 정리' },
+      { role: '학술부장', manager: '안태양', dept: '전기과', isAdmin: false, summary: '취업·자격증 정보 정리, 모의면접·취업특강, 졸업생 멘토링' },
+      { role: '문화부장', manager: '홍예섭', dept: '에너지산업설비과', isAdmin: false, summary: '울산 지역 대학 교류, 외부 기관 공동행사, 협찬·협의 관리' },
+      { role: '산학협력부장', manager: '정우진', dept: '에너지산업설비과', isAdmin: false, summary: '기업 탐방·현장 견학, 산업체 연계 교육·기술 체험 기획' },
+      { role: '총무부장', manager: '김준우', dept: '기계과', isAdmin: false, summary: '교학처 소통·건의 전달, 교내·체육시설 불편사항 개선 안내' },
+      { role: '홍보소통부장', manager: '남주현', dept: '에너지산업설비과', isAdmin: false, summary: '공식 SNS 운영, 행사 기록, 의견 수렴 창구 및 부서 연결' },
+      { role: '봉사부장', manager: '정호준', dept: '에너지산업설비과', isAdmin: false, summary: '교내·지역 봉사 기획, 봉사동아리·기관 협력, 실적 관리' }
+    ];
+
+    const DEFAULT_PIN = '2026';
+    const AUTH_SESSION_KEY = 'kopo_ulsan_auth_session_v2';
+
+    const DEFAULT_KPIS = [
+      { id: 'kpi-1', role: '학생회장', manager: '정우성', dept: '-', name: '총학생회 핵심 공약 이행률', criteria: '임기 내 공약 완료 건수 / 전체 공약', unit: '%', target: 90, actual: 30, status: '진행중', due: '2027-11-30', note: '학생회 총괄' },
+      { id: 'kpi-2', role: '학생회장', manager: '정우성', dept: '-', name: '교학처·대외 소통 회의 개최', criteria: '정기 소통 및 주요 현안 협의 건수', unit: '회', target: 12, actual: 4, status: '진행중', due: '2027-11-30', note: '월 1회 이상' },
+      { id: 'kpi-3', role: '부회장', manager: '정민규', dept: '-', name: '부서별 KPI 및 집행 자료 점검', criteria: '부서 실적·예산 집행 현황 취합 및 점검', unit: '%', target: 100, actual: 80, status: '진행중', due: '2027-11-30', note: '회장 보좌 및 운영 조율' },
+      { id: 'kpi-4', role: '부회장', manager: '정민규', dept: '-', name: '학생회 행사·사업 원활 운영률', criteria: '주요 행사 및 복지 사업 차질 없이 진행', unit: '%', target: 95, actual: 75, status: '진행중', due: '2027-11-30', note: '부서 간 협업 조율' },
+      { id: 'kpi-5', role: '대의원장', manager: '박선민', dept: '에너지산업설비과', name: '핵심 공약 이행률 관리', criteria: '연간 핵심 공약 완료 건수 / 전체 공약', unit: '%', target: 90, actual: 30, status: '진행중', due: '2027-11-30', note: '분기별 점검' },
+      { id: 'kpi-6', role: '대의원장', manager: '박선민', dept: '에너지산업설비과', name: '회의록 기한 내 정리율', criteria: '정기·과대표 회의 종료 후 48시간 이내 공유', unit: '%', target: 100, actual: 100, status: '진행중', due: '상시', note: '드라이브 업로드' },
+      { id: 'kpi-7', role: '학술부장', manager: '안태양', dept: '전기과', name: '취업·자격증 특강 및 멘토링 개최', criteria: '모의면접, 취업특강, 졸업생 멘토링 연간 횟수', unit: '회', target: 4, actual: 1, status: '진행중', due: '2027-10-31', note: '학기당 2회 목표' },
+      { id: 'kpi-8', role: '학술부장', manager: '안태양', dept: '전기과', name: '학술 프로그램 참여 만족도', criteria: '행사 종료 후 구글폼 설문 평균 점수(5점 만점)', unit: '점', target: 4.3, actual: 4.5, status: '진행중', due: '상시', note: '설문 링크 연동' },
+      { id: 'kpi-9', role: '문화부장', manager: '홍예섭', dept: '에너지산업설비과', name: '대외 교류 및 공동행사 추진', criteria: '울산 지역 대학·외부 기관 연계 프로그램 수', unit: '건', target: 2, actual: 0, status: '진행전', due: '2027-10-31', note: '교류 일정 협의 중' },
+      { id: 'kpi-10', role: '문화부장', manager: '홍예섭', dept: '에너지산업설비과', name: '외부 협찬 유치 및 정산 관리', criteria: '학교 기준 준수 협찬·협의 내역 건수', unit: '건', target: 4, actual: 1, status: '진행중', due: '2027-10-31', note: '협의서 보관 필수' },
+      { id: 'kpi-11', role: '산학협력부장', manager: '정우진', dept: '에너지산업설비과', name: '기업 탐방·기술 체험 프로그램 운영', criteria: '현장 견학 및 산업체 연계 교육 연간 횟수', unit: '회', target: 4, actual: 1, status: '진행중', due: '2027-10-31', note: '모집 정원 80% 이상 목표' },
+      { id: 'kpi-12', role: '산학협력부장', manager: '정우진', dept: '에너지산업설비과', name: '신규 교류 기업·기술교육원 발굴', criteria: '연계 협약 또는 교류 성사 기관 수', unit: '곳', target: 3, actual: 1, status: '진행중', due: '2027-09-30', note: '울산 산단 중심' },
+      { id: 'kpi-13', role: '총무부장', manager: '김준우', dept: '기계과', name: '교내·체육시설 불편사항 개선율', criteria: '접수된 시설 건의 중 개선·답변 완료 비율', unit: '%', target: 80, actual: 50, status: '진행중', due: '상시', note: '교학처 협의 기록' },
+      { id: 'kpi-14', role: '총무부장', manager: '김준우', dept: '기계과', name: '협의 결과 학생 안내 준수율', criteria: '교학처 협의 후 3일 이내 결과 공지 비율', unit: '%', target: 100, actual: 100, status: '진행중', due: '상시', note: '홍보부 연계 공지' },
+      { id: 'kpi-15', role: '홍보소통부장', manager: '남주현', dept: '에너지산업설비과', name: '공식 SNS 정기 콘텐츠 발행', criteria: '행사 기록·공지·홍보 게시물 월간 업로드 수', unit: '건', target: 8, actual: 6, status: '진행중', due: '매월 말', note: '주 2회 이상 목표' },
+      { id: 'kpi-16', role: '홍보소통부장', manager: '남주현', dept: '에너지산업설비과', name: '학생 의견 24시간 내 부서 전달율', criteria: '의견 수렴 창구 접수 건 담당 부서 연결률', unit: '%', target: 100, actual: 95, status: '진행중', due: '상시', note: '오픈채팅/구글폼' },
+      { id: 'kpi-17', role: '봉사부장', manager: '정호준', dept: '에너지산업설비과', name: '교내·지역사회 봉사활동 운영', criteria: '환경정화 및 봉사동아리·기관 협력 횟수', unit: '회', target: 4, actual: 1, status: '진행중', due: '2027-10-31', note: '학기당 2회 목표' },
+      { id: 'kpi-18', role: '봉사부장', manager: '정호준', dept: '에너지산업설비과', name: '봉사 참여자 실적 등록 완료율', criteria: 'VMS/1365 등 참여 학생 실적 누락 없이 등록', unit: '%', target: 100, actual: 100, status: '진행중', due: '상시', note: '활동 후 7일 이내' }
+    ];
+
+    const DEFAULT_LOGS = [
+      { id: 'log-1', date: '2026-11-15', role: '대의원장', manager: '박선민', title: '11월 정기회의 및 과대표 회의', kpiId: 'kpi-6', kpiName: '회의록 기한 내 정리율', participants: 18, satisfaction: '-', note: '회의록 드라이브 업로드 완료' },
+      { id: 'log-2', date: '2026-11-18', role: '산학협력부장', manager: '정우진', title: '울산 지역 에너지 기업 현장 견학', kpiId: 'kpi-11', kpiName: '기업 탐방·기술 체험 프로그램 운영', participants: 32, satisfaction: 4.6, note: '참석자 명단 및 사진 첨부' },
+      { id: 'log-3', date: '2026-11-20', role: '홍보소통부장', manager: '남주현', title: '학생 건의사항 오픈채팅 1차 취합', kpiId: 'kpi-16', kpiName: '학생 의견 24시간 내 부서 전달율', participants: 14, satisfaction: '-', note: '총무부 5건, 학술부 4건 전달' }
+    ];
+
+    const DEFAULT_BOARD = [
+      { id: 'post-1', authorRole: '학생회장 (정우성)', targetRole: '전체 임원', priority: '공지', title: '2026학년도 11월 정기 KPI 실적 입력 안내', content: '매월 말 정기회의 전까지 각 부서장님은 담당 KPI 실적과 활동 로그를 최신화해 주시기 바랍니다.', done: false, createdAt: '2026-11-14 10:00' },
+      { id: 'post-2', authorRole: '총무부장 (김준우)', targetRole: '홍보소통부장 (남주현)', priority: '일반', title: '체육시설 야간 개방 시간 연장 협의 결과 카드뉴스 요청', content: '교학처 협의가 완료되어 학생 공지용 SNS 게시물 제작 협조 부탁드립니다.', done: true, createdAt: '2026-11-19 15:30' }
+    ];
+
+    let appState = {
+      kpis: [],
+      logs: [],
+      board: [],
+      pins: {},
+      updatedAt: new Date().toISOString()
+    };
+
+    let currentUser = null;
+    let currentRoomCode = 'kopo-ulsan-2026';
+    let syncTimer = null;
+    const CLOUD_API_BASE = 'https://kvdb.io/A9xK7mP2qR8vL4nW6tY1zB';
+
+    function safeClone(obj) {
+      return JSON.parse(JSON.stringify(obj));
+    }
+
+    function normalizeNames(state) {
+      if (!state) return state;
+      if (!state.pins || typeof state.pins !== 'object') state.pins = {};
+      (state.kpis || []).forEach(k => {
+        if (k.manager === '정효준') k.manager = '정호준';
+        if (k.manager === '박선빈') k.manager = '박선민';
+      });
+      (state.logs || []).forEach(l => {
+        if (l.manager === '정효준') l.manager = '정호준';
+        if (l.manager === '박선빈') l.manager = '박선민';
+      });
+      (state.board || []).forEach(b => {
+        if (b.authorRole) b.authorRole = b.authorRole.replace('정효준', '정호준').replace('박선빈', '박선민');
+        if (b.targetRole) b.targetRole = b.targetRole.replace('정효준', '정호준').replace('박선빈', '박선민');
+      });
+      return state;
+    }
+
+    function getLocalKey() {
+      return `kopo_ulsan_kpi_state_${currentRoomCode}`;
+    }
+
+    function getUserPin(role) {
+      return (appState.pins && appState.pins[role]) ? String(appState.pins[role]).trim() : DEFAULT_PIN;
+    }
+
+    function togglePinVisibility() {
+      const inp = document.getElementById('loginPinInput');
+      if (!inp) return;
+      inp.type = inp.type === 'password' ? 'text' : 'password';
+    }
+
+    function initLoginGate() {
+      try {
+        const savedSessionRaw = localStorage.getItem(AUTH_SESSION_KEY);
+        if (savedSessionRaw) {
+          const session = JSON.parse(savedSessionRaw);
+          if (session && session.autoLogin && session.role) {
+            const member = ROLES_META.find(r => r.role === session.role);
+            if (member) {
+              currentUser = member;
+              enterDashboard(true);
+              return;
+            }
+          }
+        }
+      } catch (e) {}
+
+      const gate = document.getElementById('loginGate');
+      const app = document.getElementById('appContainer');
+      if (gate) gate.style.display = 'flex';
+      if (app) app.style.display = 'none';
+    }
+
+    function handleLoginSubmit(e) {
+      if (e && e.preventDefault) e.preventDefault();
+
+      const roleSel = document.getElementById('loginRoleSelect');
+      const pinInp = document.getElementById('loginPinInput');
+      const autoChk = document.getElementById('autoLoginCheck');
+      const errEl = document.getElementById('loginErrorMsg');
+      const cardEl = document.getElementById('loginCard');
+
+      const role = roleSel ? roleSel.value.trim() : '';
+      const pin = pinInp ? pinInp.value.replace(/\s+/g, '') : '';
+      const autoLogin = autoChk ? autoChk.checked : true;
+
+      if (!role) {
+        if (errEl) {
+          errEl.textContent = '먼저 승인된 총학생회 직책 및 성명을 선택해 주세요.';
+          errEl.classList.remove('hidden');
+        }
+        return false;
+      }
+
+      const member = ROLES_META.find(r => r.role === role);
+      if (!member) return false;
+
+      const customPin = getUserPin(role);
+      const isValid = (pin === customPin) || (pin === DEFAULT_PIN);
+
+      if (!isValid) {
+        if (errEl) {
+          errEl.textContent = '비밀번호가 일치하지 않습니다. (초기 비밀번호: 2026)';
+          errEl.classList.remove('hidden');
+        }
+        if (cardEl) {
+          cardEl.classList.remove('animate-shake');
+          void cardEl.offsetWidth;
+          cardEl.classList.add('animate-shake');
+        }
+        if (pinInp) {
+          pinInp.value = '';
+          pinInp.focus();
+        }
+        return false;
+      }
+
+      if (errEl) errEl.classList.add('hidden');
+      currentUser = member;
+
+      try {
+        if (autoLogin) {
+          localStorage.setItem(AUTH_SESSION_KEY, JSON.stringify({
+            role: member.role,
+            autoLogin: true,
+            loginAt: new Date().toISOString()
+          }));
+        } else {
+          localStorage.removeItem(AUTH_SESSION_KEY);
+        }
+      } catch (err) {}
+
+      if (pinInp) pinInp.value = '';
+      enterDashboard(false);
+      return false;
+    }
+
+    function enterDashboard(isAuto) {
+      const gate = document.getElementById('loginGate');
+      const app = document.getElementById('appContainer');
+
+      if (gate) {
+        gate.classList.add('hidden');
+        gate.style.display = 'none';
+      }
+      if (app) {
+        app.classList.remove('hidden');
+        app.classList.add('flex');
+        app.style.display = 'flex';
+      }
+
+      const userBadge = document.getElementById('currentUserBadge');
+      if (userBadge && currentUser) {
+        userBadge.textContent = `${currentUser.role} ${currentUser.manager}`;
+      }
+
+      try {
+        populateSelectOptions();
+        const label = `${currentUser.role} (${currentUser.manager})`;
+        const boardAuthor = document.getElementById('boardAuthorRole');
+        const logRole = document.getElementById('logRole');
+        if (boardAuthor) boardAuthor.value = label;
+        if (logRole) {
+          logRole.value = currentUser.role;
+          onLogRoleChange();
+        }
+        renderAll();
+      } catch (err) {
+        console.error('Render error:', err);
+      }
+
+      if (isAuto) {
+        showToast(`${currentUser.role} ${currentUser.manager}님, 자동 로그인되었습니다.`);
+      } else {
+        showToast(`환영합니다, ${currentUser.role} ${currentUser.manager}님!`);
+      }
+
+      pullFromCloud(true);
+    }
+
+    function handleLogout() {
+      if (!confirm('로그아웃하고 임원 선택 화면으로 이동하시겠습니까?')) return;
+      try {
+        localStorage.removeItem(AUTH_SESSION_KEY);
+      } catch (e) {}
+      currentUser = null;
+      const gate = document.getElementById('loginGate');
+      const app = document.getElementById('appContainer');
+      if (app) {
+        app.classList.add('hidden');
+        app.style.display = 'none';
+      }
+      if (gate) {
+        gate.classList.remove('hidden');
+        gate.style.display = 'flex';
+      }
+      showToast('로그아웃되었습니다.');
+    }
+
+    function openPinModal() {
+      if (!currentUser) return;
+      document.getElementById('pinModalUserLabel').textContent = `${currentUser.role} ${currentUser.manager}`;
+      document.getElementById('newPinInput').value = '';
+      document.getElementById('confirmPinInput').value = '';
+
+      const adminBox = document.getElementById('adminPinResetBox');
+      if (currentUser.isAdmin) {
+        adminBox.classList.remove('hidden');
+        const sel = document.getElementById('resetTargetRoleSelect');
+        sel.innerHTML = ROLES_META.map(m => `<option value="${m.role}">${m.role} (${m.manager})</option>`).join('');
+      } else {
+        adminBox.classList.add('hidden');
+      }
+
+      const modal = document.getElementById('pinModal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closePinModal() {
+      const modal = document.getElementById('pinModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function handleChangeMyPin(e) {
+      e.preventDefault();
+      if (!currentUser) return;
+      const p1 = document.getElementById('newPinInput').value.trim();
+      const p2 = document.getElementById('confirmPinInput').value.trim();
+      if (p1.length < 4) return showToast('비밀번호는 4자리 이상 입력해 주세요.', 'error');
+      if (p1 !== p2) return showToast('비밀번호 확인이 일치하지 않습니다.', 'error');
+
+      if (!appState.pins) appState.pins = {};
+      appState.pins[currentUser.role] = p1;
+      closePinModal();
+      persistState(true);
+      showToast(`${currentUser.role} ${currentUser.manager}님의 비밀번호가 변경되었습니다.`);
+    }
+
+    function handleResetMemberPin() {
+      const targetRole = document.getElementById('resetTargetRoleSelect').value;
+      const member = ROLES_META.find(m => m.role === targetRole);
+      if (!member) return;
+      if (!confirm(`[${member.role} ${member.manager}]님의 비밀번호를 초기값(2026)으로 재설정하시겠습니까?`)) return;
+      if (!appState.pins) appState.pins = {};
+      appState.pins[targetRole] = DEFAULT_PIN;
+      persistState(true);
+      showToast(`[${member.role} ${member.manager}] 비밀번호가 2026으로 초기화되었습니다.`);
+    }
+
+    function loadInitialData() {
+      try {
+        const savedRoom = localStorage.getItem('kopo_ulsan_last_room');
+        if (savedRoom) {
+          currentRoomCode = savedRoom;
+          const roomInp = document.getElementById('roomCodeInput');
+          if (roomInp) roomInp.value = currentRoomCode;
+        }
+
+        const raw = localStorage.getItem(getLocalKey());
+        if (raw) {
+          appState = normalizeNames(JSON.parse(raw));
+        } else {
+          appState = { kpis: safeClone(DEFAULT_KPIS), logs: safeClone(DEFAULT_LOGS), board: safeClone(DEFAULT_BOARD), pins: {}, updatedAt: new Date().toISOString() };
+          saveLocalOnly();
+        }
+      } catch (e) {
+        appState = { kpis: safeClone(DEFAULT_KPIS), logs: safeClone(DEFAULT_LOGS), board: safeClone(DEFAULT_BOARD), pins: {}, updatedAt: new Date().toISOString() };
+      }
+      initLoginGate();
+    }
+
+    function saveLocalOnly() {
+      try {
+        appState.updatedAt = new Date().toISOString();
+        localStorage.setItem(getLocalKey(), JSON.stringify(appState));
+        localStorage.setItem('kopo_ulsan_last_room', currentRoomCode);
+      } catch (e) {}
+    }
+
+    async function persistState(showToastMsg = false) {
+      saveLocalOnly();
+      renderAll();
+      try {
+        const res = await fetch(`${CLOUD_API_BASE}/${encodeURIComponent(currentRoomCode)}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(appState)
+        });
+        if (res.ok) {
+          updateSyncBadge('실시간 동기화 완료', true);
+          if (showToastMsg) showToast('저장 및 클라우드 동기화가 완료되었습니다.');
+        } else {
+          updateSyncBadge('로컬 저장됨 (오프라인 모드)', false);
+          if (showToastMsg) showToast('브라우저에 안전하게 저장되었습니다.');
+        }
+      } catch (e) {
+        updateSyncBadge('로컬 저장됨 (오프라인 모드)', false);
+        if (showToastMsg) showToast('브라우저에 안전하게 저장되었습니다.');
+      }
+    }
+
+    async function pullFromCloud(silent = false) {
+      if (!currentUser) return;
+      try {
+        const res = await fetch(`${CLOUD_API_BASE}/${encodeURIComponent(currentRoomCode)}`);
+        if (res.ok) {
+          const text = await res.text();
+          if (text) {
+            const remote = normalizeNames(JSON.parse(text));
+            if (remote && Array.isArray(remote.kpis) && remote.kpis.length > 0 && (!appState.updatedAt || remote.updatedAt > appState.updatedAt)) {
+              const localPins = appState.pins || {};
+              appState = remote;
+              appState.pins = { ...localPins, ...(remote.pins || {}) };
+              saveLocalOnly();
+              renderAll();
+              if (!silent) showToast('공유방의 최신 데이터를 불러왔습니다.');
+            }
+          }
+          updateSyncBadge('실시간 동기화 연결됨', true);
+        }
+      } catch (e) {
+        updateSyncBadge('로컬 모드 작동중', false);
+      }
+    }
+
+    function updateSyncBadge(text, online) {
+      const el = document.getElementById('syncStatusText');
+      const dot = document.getElementById('syncDot');
+      if (el) el.textContent = text;
+      if (dot) dot.className = online ? 'w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse' : 'w-1.5 h-1.5 rounded-full bg-amber-400';
+    }
+
+    function changeRoomCode() {
+      const val = document.getElementById('roomCodeInput').value.trim();
+      if (!val) return showToast('공유방 코드를 입력하세요.', 'error');
+      currentRoomCode = val;
+      localStorage.setItem('kopo_ulsan_last_room', currentRoomCode);
+      const raw = localStorage.getItem(getLocalKey());
+      if (raw) {
+        appState = normalizeNames(JSON.parse(raw));
+      } else {
+        appState = { kpis: safeClone(DEFAULT_KPIS), logs: safeClone(DEFAULT_LOGS), board: safeClone(DEFAULT_BOARD), pins: {}, updatedAt: '1970-01-01T00:00:00.000Z' };
+      }
+      renderAll();
+      pullFromCloud(false);
+      showToast(`공유방 [${currentRoomCode}]에 연결되었습니다.`);
+    }
+
+    function copyShareCode() {
+      navigator.clipboard?.writeText(currentRoomCode);
+      showToast(`공유 코드 [${currentRoomCode}]가 복사되었습니다.`);
+    }
+
+    function populateSelectOptions() {
+      const filterRole = document.getElementById('filterRole');
+      const modalRole = document.getElementById('modalRole');
+      const logRole = document.getElementById('logRole');
+      const boardAuthor = document.getElementById('boardAuthorRole');
+      const boardTarget = document.getElementById('boardTargetRole');
+
+      if (!filterRole) return;
+      filterRole.innerHTML = '<option value="ALL">전체 직책 / 부서 (9개)</option>';
+      modalRole.innerHTML = '<option value="">직책/부서 선택</option>';
+      logRole.innerHTML = '<option value="">담당 직책/부서 선택</option>';
+      boardAuthor.innerHTML = '<option value="">작성자(직책/성명) 선택</option>';
+      boardTarget.innerHTML = '<option value="전체 임원">수신: 전체 임원</option>';
+
+      ROLES_META.forEach(item => {
+        const label = `${item.role} (${item.manager})`;
+        filterRole.innerHTML += `<option value="${item.role}">${label}</option>`;
+        modalRole.innerHTML += `<option value="${item.role}">${label}</option>`;
+        logRole.innerHTML += `<option value="${item.role}">${label}</option>`;
+        boardAuthor.innerHTML += `<option value="${label}">${label}</option>`;
+        boardTarget.innerHTML += `<option value="${label}">수신: ${label}</option>`;
+      });
+
+      const logDate = document.getElementById('logDate');
+      if (logDate) logDate.value = new Date().toISOString().slice(0, 10);
+    }
+
+    function calcRate(kpi) {
+      const t = Number(kpi.target) || 0;
+      const a = Number(kpi.actual) || 0;
+      if (t <= 0) return 0;
+      return (a / t) * 100;
+    }
+
+    function renderAll() {
+      renderTopStats();
+      renderDeptExcelCards();
+      renderKpiTable();
+      renderBoardList();
+      renderLogTable();
+      renderOverviewCharts();
+    }
+
+    function renderTopStats() {
+      const total = appState.kpis.length;
+      const avg = total ? appState.kpis.reduce((acc, k) => acc + calcRate(k), 0) / total : 0;
+      const completed = appState.kpis.filter(k => k.status === '완료').length;
+      const inProg = appState.kpis.filter(k => k.status === '진행중').length;
+
+      document.getElementById('statTotalCount').textContent = `${total}개`;
+      document.getElementById('statAvgRate').textContent = `${avg.toFixed(1)}%`;
+      document.getElementById('statCompletedCount').textContent = `${completed}개`;
+      document.getElementById('statInProgressText').textContent = `진행중 ${inProg}개`;
+      document.getElementById('statActivityCount').textContent = `${appState.logs.length + appState.board.length}건`;
+      document.getElementById('boardBadge').textContent = appState.board.filter(b => !b.done).length;
+      document.getElementById('logBadge').textContent = appState.logs.length;
+
+      const badge = document.getElementById('statRateBadge');
+      if (avg >= 80) {
+        badge.textContent = '우수 달성';
+        badge.className = 'text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700';
+      } else if (avg >= 50) {
+        badge.textContent = '순항중';
+        badge.className = 'text-xs font-semibold px-2 py-0.5 rounded-full bg-blue-50 text-blue-700';
+      } else {
+        badge.textContent = '초기 진행';
+        badge.className = 'text-xs font-semibold px-2 py-0.5 rounded-full bg-amber-50 text-amber-700';
+      }
+    }
+
+    function renderDeptExcelCards() {
+      const grid = document.getElementById('deptExcelExportGrid');
+      grid.innerHTML = ROLES_META.map(meta => {
+        const deptKpis = appState.kpis.filter(k => k.role === meta.role);
+        const avg = deptKpis.length ? deptKpis.reduce((s, k) => s + calcRate(k), 0) / deptKpis.length : 0;
+        const isMe = currentUser && currentUser.role === meta.role;
+        return `
+          <button onclick="exportSingleDepartmentExcel('${meta.role}')" class="group text-left p-3 rounded-xl border ${isMe ? 'border-blue-400 bg-blue-50/60 ring-1 ring-blue-300' : 'border-slate-200 bg-slate-50/60'} hover:border-[#1B365D] hover:bg-blue-50/40 transition flex flex-col justify-between">
+            <div class="flex items-center justify-between w-full">
+              <span class="text-xs font-extrabold text-[#1B365D]">${meta.role}</span>
+              <span class="text-[11px] font-bold px-1.5 py-0.5 rounded bg-white border border-slate-200 text-slate-700">${meta.manager}</span>
+            </div>
+            <div class="mt-2 flex items-center justify-between text-[11px] text-slate-500">
+              <span>지표 ${deptKpis.length}개 · <strong class="text-blue-700">${avg.toFixed(0)}%</strong></span>
+              <span class="font-bold text-emerald-700 group-hover:underline">엑셀(.xlsx) ↓</span>
+            </div>
+          </button>
+        `;
+      }).join('');
+    }
+
+    function renderKpiTable() {
+      const roleFilter = document.getElementById('filterRole').value;
+      const statusFilter = document.getElementById('filterStatus').value;
+      const keyword = document.getElementById('searchKpiInput').value.trim().toLowerCase();
+
+      const filtered = appState.kpis.filter(k => {
+        if (roleFilter !== 'ALL' && k.role !== roleFilter) return false;
+        if (statusFilter !== 'ALL' && k.status !== statusFilter) return false;
+        if (keyword) {
+          const hay = `${k.role} ${k.manager} ${k.name} ${k.criteria} ${k.note}`.toLowerCase();
+          if (!hay.includes(keyword)) return false;
+        }
+        return true;
+      });
+
+      const tbody = document.getElementById('kpiTableBody');
+      if (!filtered.length) {
+        tbody.innerHTML = `<tr><td colspan="8" class="px-4 py-10 text-center text-slate-400">조건에 해당하는 KPI 지표가 없습니다.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(k => {
+        const rate = calcRate(k);
+        const clamped = Math.min(100, Math.max(0, rate));
+        const barColor = rate >= 100 ? 'bg-emerald-500' : rate >= 60 ? 'bg-blue-600' : 'bg-amber-500';
+        const statusStyle = {
+          '완료': 'bg-emerald-100 text-emerald-800 border-emerald-200',
+          '진행중': 'bg-amber-100 text-amber-800 border-amber-200',
+          '진행전': 'bg-slate-100 text-slate-700 border-slate-200',
+          '보류': 'bg-rose-100 text-rose-800 border-rose-200'
+        }[k.status] || 'bg-slate-100 text-slate-700';
+
+        return `
+          <tr class="hover:bg-slate-50/90 transition">
+            <td class="px-3 py-3 whitespace-nowrap">
+              <div class="font-extrabold text-[#1B365D]">${k.role}</div>
+              <div class="text-xs text-slate-600 font-semibold">${k.manager} <span class="text-slate-400 font-normal">${k.dept !== '-' ? `(${k.dept})` : ''}</span></div>
+            </td>
+            <td class="px-3 py-3">
+              <div class="font-bold text-slate-900">${k.name}</div>
+              <div class="text-xs text-slate-500 mt-0.5">${k.criteria || '-'}</div>
+              ${k.note ? `<div class="text-[11px] text-blue-600 mt-0.5">비고: ${k.note}</div>` : ''}
+            </td>
+            <td class="px-3 py-3 text-right whitespace-nowrap font-bold text-slate-700 tabular-nums">
+              ${k.target}${k.unit}
+            </td>
+            <td class="px-3 py-3 text-right whitespace-nowrap">
+              <div class="inline-flex items-center gap-1">
+                <input type="number" step="0.1" value="${k.actual}" onchange="quickUpdateActual('${k.id}', this.value)"
+                  class="w-20 text-right font-extrabold text-blue-700 border border-slate-300 rounded-md px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500 tabular-nums" />
+                <span class="text-xs text-slate-500">${k.unit}</span>
+              </div>
+            </td>
+            <td class="px-3 py-3 whitespace-nowrap">
+              <div class="flex items-center justify-between text-xs font-bold mb-1 tabular-nums">
+                <span>${rate.toFixed(1)}%</span>
+              </div>
+              <div class="w-full bg-slate-200 rounded-full h-2 overflow-hidden">
+                <div class="${barColor} h-2 rounded-full transition-all" style="width: ${clamped}%"></div>
+              </div>
+            </td>
+            <td class="px-3 py-3 text-center whitespace-nowrap">
+              <select onchange="quickUpdateStatus('${k.id}', this.value)" class="text-xs font-bold px-2.5 py-1 rounded-full border ${statusStyle} focus:outline-none">
+                <option value="진행전" ${k.status === '진행전' ? 'selected' : ''}>진행전</option>
+                <option value="진행중" ${k.status === '진행중' ? 'selected' : ''}>진행중</option>
+                <option value="완료" ${k.status === '완료' ? 'selected' : ''}>완료</option>
+                <option value="보류" ${k.status === '보류' ? 'selected' : ''}>보류</option>
+              </select>
+            </td>
+            <td class="px-3 py-3 text-center whitespace-nowrap text-xs text-slate-500 tabular-nums">${k.due || '-'}</td>
+            <td class="px-3 py-3 text-center whitespace-nowrap no-print">
+              <button onclick="openKpiModal('${k.id}')" class="px-2 py-1 text-xs font-semibold rounded bg-slate-100 hover:bg-slate-200 text-slate-700 mr-1">수정</button>
+              <button onclick="deleteKpi('${k.id}')" class="px-2 py-1 text-xs font-semibold rounded bg-rose-50 hover:bg-rose-100 text-rose-700">삭제</button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function quickUpdateActual(id, val) {
+      const item = appState.kpis.find(k => k.id === id);
+      if (!item) return;
+      item.actual = Number(val) || 0;
+      if (item.actual >= item.target && item.target > 0) {
+        item.status = '완료';
+      } else if (item.actual > 0 && item.status === '진행전') {
+        item.status = '진행중';
+      }
+      persistState(true);
+    }
+
+    function quickUpdateStatus(id, val) {
+      const item = appState.kpis.find(k => k.id === id);
+      if (!item) return;
+      item.status = val;
+      persistState(true);
+    }
+
+    function deleteKpi(id) {
+      if (!confirm('해당 KPI 성과 지표를 삭제하시겠습니까?')) return;
+      appState.kpis = appState.kpis.filter(k => k.id !== id);
+      persistState(true);
+    }
+
+    function openKpiModal(editId = null) {
+      const modal = document.getElementById('kpiModal');
+      document.getElementById('modalKpiId').value = editId || '';
+      if (editId) {
+        const k = appState.kpis.find(item => item.id === editId);
+        if (!k) return;
+        document.getElementById('kpiModalTitle').textContent = 'KPI 지표 상세 수정 및 성과 입력';
+        document.getElementById('modalRole').value = k.role;
+        document.getElementById('modalManager').value = k.manager;
+        document.getElementById('modalDept').value = k.dept;
+        document.getElementById('modalName').value = k.name;
+        document.getElementById('modalCriteria').value = k.criteria || '';
+        document.getElementById('modalUnit').value = k.unit;
+        document.getElementById('modalTarget').value = k.target;
+        document.getElementById('modalActual').value = k.actual;
+        document.getElementById('modalStatus').value = k.status;
+        document.getElementById('modalDue').value = k.due || '';
+        document.getElementById('modalNote').value = k.note || '';
+      } else {
+        document.getElementById('kpiModalTitle').textContent = '새 KPI 지표 추가 / 성과 입력';
+        document.getElementById('modalRole').value = currentUser ? currentUser.role : '';
+        onModalRoleChange();
+        document.getElementById('modalName').value = '';
+        document.getElementById('modalCriteria').value = '';
+        document.getElementById('modalUnit').value = '회';
+        document.getElementById('modalTarget').value = 1;
+        document.getElementById('modalActual').value = 0;
+        document.getElementById('modalStatus').value = '진행중';
+        document.getElementById('modalDue').value = '2027-11-30';
+        document.getElementById('modalNote').value = '';
+      }
+      updateModalPreview();
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeKpiModal() {
+      const modal = document.getElementById('kpiModal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function onModalRoleChange() {
+      const roleVal = document.getElementById('modalRole').value;
+      const found = ROLES_META.find(r => r.role === roleVal);
+      if (found) {
+        document.getElementById('modalManager').value = found.manager;
+        document.getElementById('modalDept').value = found.dept;
+      } else {
+        document.getElementById('modalManager').value = '';
+        document.getElementById('modalDept').value = '';
+      }
+    }
+
+    function updateModalPreview() {
+      const t = Number(document.getElementById('modalTarget').value) || 0;
+      const a = Number(document.getElementById('modalActual').value) || 0;
+      const rate = t > 0 ? (a / t) * 100 : 0;
+      document.getElementById('modalPreviewRate').textContent = `${rate.toFixed(1)}%`;
+      document.getElementById('modalPreviewBar').style.width = `${Math.min(100, Math.max(0, rate))}%`;
+    }
+
+    function handleSaveKpiModal(e) {
+      e.preventDefault();
+      const id = document.getElementById('modalKpiId').value;
+      const payload = {
+        id: id || `kpi-${Date.now()}`,
+        role: document.getElementById('modalRole').value,
+        manager: document.getElementById('modalManager').value.trim(),
+        dept: document.getElementById('modalDept').value.trim() || '-',
+        name: document.getElementById('modalName').value.trim(),
+        criteria: document.getElementById('modalCriteria').value.trim(),
+        unit: document.getElementById('modalUnit').value.trim() || '건',
+        target: Number(document.getElementById('modalTarget').value) || 0,
+        actual: Number(document.getElementById('modalActual').value) || 0,
+        status: document.getElementById('modalStatus').value,
+        due: document.getElementById('modalDue').value.trim(),
+        note: document.getElementById('modalNote').value.trim()
+      };
+
+      if (id) {
+        const idx = appState.kpis.findIndex(k => k.id === id);
+        if (idx >= 0) appState.kpis[idx] = payload;
+      } else {
+        appState.kpis.push(payload);
+      }
+
+      closeKpiModal();
+      persistState(true);
+    }
+
+    function handleAddBoardPost(e) {
+      e.preventDefault();
+      const post = {
+        id: `post-${Date.now()}`,
+        authorRole: document.getElementById('boardAuthorRole').value,
+        targetRole: document.getElementById('boardTargetRole').value,
+        priority: document.getElementById('boardPriority').value,
+        title: document.getElementById('boardTitle').value.trim(),
+        content: document.getElementById('boardContent').value.trim(),
+        done: false,
+        createdAt: new Date().toLocaleString('ko-KR', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })
+      };
+      appState.board.unshift(post);
+      document.getElementById('boardTitle').value = '';
+      document.getElementById('boardContent').value = '';
+      persistState(true);
+    }
+
+    function toggleBoardDone(id) {
+      const post = appState.board.find(b => b.id === id);
+      if (!post) return;
+      post.done = !post.done;
+      persistState(true);
+    }
+
+    function deleteBoardPost(id) {
+      appState.board = appState.board.filter(b => b.id !== id);
+      persistState(true);
+    }
+
+    function renderBoardList() {
+      const container = document.getElementById('boardListContainer');
+      if (!appState.board.length) {
+        container.innerHTML = `<div class="col-span-2 text-center py-8 text-slate-400 text-sm">등록된 공유 업무가 없습니다.</div>`;
+        return;
+      }
+      container.innerHTML = appState.board.map(post => {
+        const pBadge = post.priority === '긴급'
+          ? 'bg-rose-100 text-rose-700'
+          : post.priority === '공지'
+          ? 'bg-blue-100 text-blue-700'
+          : 'bg-slate-100 text-slate-700';
+        return `
+          <div class="p-4 rounded-xl border ${post.done ? 'bg-slate-50 border-slate-200 opacity-75' : 'bg-white border-slate-200'} shadow-sm flex flex-col justify-between gap-3">
+            <div>
+              <div class="flex items-center justify-between gap-2 mb-1.5">
+                <div class="flex items-center gap-1.5">
+                  <span class="text-[11px] font-bold px-2 py-0.5 rounded ${pBadge}">${post.priority}</span>
+                  <span class="text-xs font-bold text-[#1B365D]">${post.authorRole}</span>
+                  <span class="text-xs text-slate-400">→ ${post.targetRole}</span>
+                </div>
+                <span class="text-[11px] text-slate-400">${post.createdAt}</span>
+              </div>
+              <h4 class="font-extrabold text-sm ${post.done ? 'line-through text-slate-500' : 'text-slate-900'}">${post.title}</h4>
+              <p class="text-xs text-slate-600 mt-1 leading-relaxed">${post.content}</p>
+            </div>
+            <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100 no-print">
+              <button onclick="toggleBoardDone('${post.id}')" class="px-2.5 py-1 rounded text-xs font-bold ${post.done ? 'bg-slate-200 text-slate-700' : 'bg-emerald-50 text-emerald-700 border border-emerald-200'}">
+                ${post.done ? '완료 취소' : '처리 완료 체크'}
+              </button>
+              <button onclick="deleteBoardPost('${post.id}')" class="px-2.5 py-1 rounded text-xs font-semibold text-rose-600 hover:bg-rose-50">삭제</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function onLogRoleChange() {
+      const role = document.getElementById('logRole').value;
+      const meta = ROLES_META.find(r => r.role === role);
+      document.getElementById('logManager').value = meta ? meta.manager : '';
+
+      const kpiSel = document.getElementById('logKpiId');
+      kpiSel.innerHTML = '<option value="">연관 KPI 지표 선택 (선택 사항)</option>';
+      const roleKpis = appState.kpis.filter(k => k.role === role);
+      const otherKpis = appState.kpis.filter(k => k.role !== role);
+
+      roleKpis.forEach(k => {
+        kpiSel.innerHTML += `<option value="${k.id}">[담당] ${k.name} (현재 ${k.actual}/${k.target}${k.unit})</option>`;
+      });
+      otherKpis.forEach(k => {
+        kpiSel.innerHTML += `<option value="${k.id}">[${k.role}] ${k.name}</option>`;
+      });
+    }
+
+    function handleAddLog(e) {
+      e.preventDefault();
+      const role = document.getElementById('logRole').value;
+      const manager = document.getElementById('logManager').value;
+      const kpiId = document.getElementById('logKpiId').value;
+      const linkedKpi = appState.kpis.find(k => k.id === kpiId);
+      const inc = Number(document.getElementById('logIncrement').value) || 0;
+      const autoAdd = document.getElementById('logAutoAddKpi').checked;
+
+      const logItem = {
+        id: `log-${Date.now()}`,
+        date: document.getElementById('logDate').value,
+        role,
+        manager,
+        title: document.getElementById('logTitle').value.trim(),
+        kpiId: kpiId || '',
+        kpiName: linkedKpi ? linkedKpi.name : '-',
+        participants: document.getElementById('logParticipants').value || '-',
+        satisfaction: document.getElementById('logSatisfaction').value || '-',
+        note: document.getElementById('logNote').value.trim()
+      };
+
+      appState.logs.unshift(logItem);
+
+      if (autoAdd && linkedKpi && inc !== 0) {
+        linkedKpi.actual = Number((Number(linkedKpi.actual) + inc).toFixed(2));
+        if (linkedKpi.actual >= linkedKpi.target && linkedKpi.target > 0) {
+          linkedKpi.status = '완료';
+        } else if (linkedKpi.actual > 0 && linkedKpi.status === '진행전') {
+          linkedKpi.status = '진행중';
+        }
+      }
+
+      document.getElementById('logTitle').value = '';
+      document.getElementById('logParticipants').value = '';
+      document.getElementById('logSatisfaction').value = '';
+      document.getElementById('logNote').value = '';
+      persistState(true);
+    }
+
+    function deleteLog(id) {
+      appState.logs = appState.logs.filter(l => l.id !== id);
+      persistState(true);
+    }
+
+    function renderLogTable() {
+      const tbody = document.getElementById('logTableBody');
+      if (!appState.logs.length) {
+        tbody.innerHTML = `<tr><td colspan="8" class="px-4 py-8 text-center text-slate-400">기록된 활동 로그가 없습니다.</td></tr>`;
+        return;
+      }
+      tbody.innerHTML = appState.logs.map(l => `
+        <tr class="hover:bg-slate-50">
+          <td class="px-3 py-2.5 text-center whitespace-nowrap tabular-nums text-slate-600">${l.date}</td>
+          <td class="px-3 py-2.5 text-center whitespace-nowrap font-bold text-[#1B365D]">${l.role} (${l.manager})</td>
+          <td class="px-3 py-2.5 font-semibold text-slate-900">${l.title}</td>
+          <td class="px-3 py-2.5 text-xs text-blue-700">${l.kpiName}</td>
+          <td class="px-3 py-2.5 text-center whitespace-nowrap tabular-nums">${l.participants !== '-' ? `${l.participants}명` : '-'}</td>
+          <td class="px-3 py-2.5 text-center whitespace-nowrap tabular-nums">${l.satisfaction !== '-' ? `${l.satisfaction}점` : '-'}</td>
+          <td class="px-3 py-2.5 text-xs text-slate-600">${l.note || '-'}</td>
+          <td class="px-3 py-2.5 text-center no-print">
+            <button onclick="deleteLog('${l.id}')" class="text-xs text-rose-600 hover:underline font-semibold">삭제</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function renderOverviewCharts() {
+      const chartBox = document.getElementById('deptBarChartContainer');
+      const sumBody = document.getElementById('deptSummaryTableBody');
+
+      chartBox.innerHTML = '';
+      sumBody.innerHTML = '';
+
+      ROLES_META.forEach(meta => {
+        const list = appState.kpis.filter(k => k.role === meta.role);
+        const doneCount = list.filter(k => k.status === '완료').length;
+        const avg = list.length ? list.reduce((s, k) => s + calcRate(k), 0) / list.length : 0;
+        const width = Math.min(100, Math.max(0, avg));
+
+        chartBox.innerHTML += `
+          <div>
+            <div class="flex justify-between text-xs font-bold mb-1">
+              <span class="text-slate-800">${meta.role} <span class="text-slate-500 font-normal">(${meta.manager})</span></span>
+              <span class="text-[#1B365D] tabular-nums">${avg.toFixed(1)}%</span>
+            </div>
+            <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
+              <div class="bg-[#2C5282] h-2.5 rounded-full transition-all" style="width: ${width}%"></div>
+            </div>
+          </div>
+        `;
+
+        sumBody.innerHTML += `
+          <tr>
+            <td class="px-2.5 py-2 font-bold text-[#1B365D]">${meta.role}</td>
+            <td class="px-2.5 py-2 text-center">${meta.manager}</td>
+            <td class="px-2.5 py-2 text-center tabular-nums">${list.length} / ${doneCount}</td>
+            <td class="px-2.5 py-2 text-right font-bold tabular-nums">${avg.toFixed(1)}%</td>
+            <td class="px-2.5 py-2 text-center no-print">
+              <button onclick="exportSingleDepartmentExcel('${meta.role}')" class="text-[11px] font-bold text-emerald-700 hover:underline">다운로드</button>
+            </td>
+          </tr>
+        `;
+      });
+    }
+
+    function formatKpiSheetRows(kpiList) {
+      const header = ['직책/부서', '담당자', '소속학과', 'KPI 성과지표명', '세부 측정 기준', '단위', '목표치', '현재 실적', '달성률(%)', '진행 상태', '목표 기한', '비고'];
+      const rows = kpiList.map(k => [
+        k.role, k.manager, k.dept, k.name, k.criteria, k.unit,
+        Number(k.target), Number(k.actual), Number(calcRate(k).toFixed(1)),
+        k.status, k.due, k.note
+      ]);
+      return [header, ...rows];
+    }
+
+    function exportSingleDepartmentExcel(roleName) {
+      if (typeof XLSX === 'undefined') return showToast('엑셀 라이브러리를 불러오는 중입니다.', 'error');
+      const meta = ROLES_META.find(r => r.role === roleName);
+      if (!meta) return;
+
+      const wb = XLSX.utils.book_new();
+      const deptKpis = appState.kpis.filter(k => k.role === roleName);
+      const deptLogs = appState.logs.filter(l => l.role === roleName);
+
+      const wsKpi = XLSX.utils.aoa_to_sheet(formatKpiSheetRows(deptKpis));
+      wsKpi['!cols'] = [{ wch: 14 }, { wch: 10 }, { wch: 16 }, { wch: 28 }, { wch: 34 }, { wch: 7 }, { wch: 10 }, { wch: 10 }, { wch: 11 }, { wch: 10 }, { wch: 12 }, { wch: 22 }];
+      XLSX.utils.book_append_sheet(wb, wsKpi, `${meta.role}_성과지표`);
+
+      const logHeader = ['활동일자', '직책/부서', '담당자', '활동/행사명', '연관 KPI', '참여인원', '만족도', '증빙/비고'];
+      const logRows = deptLogs.map(l => [l.date, l.role, l.manager, l.title, l.kpiName, l.participants, l.satisfaction, l.note]);
+      const wsLog = XLSX.utils.aoa_to_sheet([logHeader, ...logRows]);
+      wsLog['!cols'] = [{ wch: 12 }, { wch: 14 }, { wch: 10 }, { wch: 28 }, { wch: 26 }, { wch: 10 }, { wch: 10 }, { wch: 26 }];
+      XLSX.utils.book_append_sheet(wb, wsLog, `${meta.role}_실적로그`);
+
+      const today = new Date().toISOString().slice(0, 10);
+      XLSX.writeFile(wb, `폴리텍울산_총학생회_${meta.role}_${meta.manager}_KPI_${today}.xlsx`);
+      showToast(`[${meta.role} ${meta.manager}] 전용 엑셀(.xlsx) 파일이 다운로드되었습니다.`);
+    }
+
+    function exportAllDepartmentsExcel() {
+      if (typeof XLSX === 'undefined') return showToast('엑셀 라이브러리를 불러오는 중입니다.', 'error');
+      const wb = XLSX.utils.book_new();
+
+      const sumHeader = ['직책/부서', '담당자', '소속학과', 'KPI 지표 수', '완료 지표 수', '평균 달성률(%)', '핵심 담당 업무'];
+      const sumRows = ROLES_META.map(m => {
+        const list = appState.kpis.filter(k => k.role === m.role);
+        const done = list.filter(k => k.status === '완료').length;
+        const avg = list.length ? list.reduce((s, k) => s + calcRate(k), 0) / list.length : 0;
+        return [m.role, m.manager, m.dept, list.length, done, Number(avg.toFixed(1)), m.summary];
+      });
+      const wsSum = XLSX.utils.aoa_to_sheet([sumHeader, ...sumRows]);
+      wsSum['!cols'] = [{ wch: 14 }, { wch: 10 }, { wch: 16 }, { wch: 12 }, { wch: 12 }, { wch: 14 }, { wch: 44 }];
+      XLSX.utils.book_append_sheet(wb, wsSum, '부서별_요약');
+
+      const wsAll = XLSX.utils.aoa_to_sheet(formatKpiSheetRows(appState.kpis));
+      wsAll['!cols'] = [{ wch: 14 }, { wch: 10 }, { wch: 16 }, { wch: 28 }, { wch: 34 }, { wch: 7 }, { wch: 10 }, { wch: 10 }, { wch: 11 }, { wch: 10 }, { wch: 12 }, { wch: 22 }];
+      XLSX.utils.book_append_sheet(wb, wsAll, '전체_KPI_통합');
+
+      ROLES_META.forEach(m => {
+        const deptKpis = appState.kpis.filter(k => k.role === m.role);
+        const wsDept = XLSX.utils.aoa_to_sheet(formatKpiSheetRows(deptKpis));
+        wsDept['!cols'] = [{ wch: 14 }, { wch: 10 }, { wch: 16 }, { wch: 28 }, { wch: 34 }, { wch: 7 }, { wch: 10 }, { wch: 10 }, { wch: 11 }, { wch: 10 }, { wch: 12 }, { wch: 22 }];
+        XLSX.utils.book_append_sheet(wb, wsDept, `${m.role}_${m.manager}`);
+      });
+
+      const today = new Date().toISOString().slice(0, 10);
+      XLSX.writeFile(wb, `한국폴리텍_울산캠퍼스_총학생회_부서별_KPI_통합_${today}.xlsx`);
+      showToast('9개 부서 시트가 분리된 통합 엑셀(.xlsx) 파일이 다운로드되었습니다.');
+    }
+
+    function exportFilteredCSV() {
+      const rows = formatKpiSheetRows(appState.kpis);
+      const csv = '\uFEFF' + rows.map(r => r.map(v => `"${String(v ?? '').replace(/"/g, '""')}"`).join(',')).join('\n');
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `총학생회_KPI_목록_${new Date().toISOString().slice(0, 10)}.csv`;
+      link.click();
+    }
+
+    function exportJSONBackup() {
+      const blob = new Blob([JSON.stringify(appState, null, 2)], { type: 'application/json' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `총학생회_KPI_백업_${currentRoomCode}_${new Date().toISOString().slice(0, 10)}.json`;
+      link.click();
+      showToast('전체 데이터 백업(JSON) 파일이 저장되었습니다.');
+    }
+
+    function importJSONBackup(e) {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const parsed = normalizeNames(JSON.parse(reader.result));
+          if (!parsed.kpis) throw new Error('Invalid format');
+          appState = parsed;
+          persistState(true);
+          showToast('백업 데이터를 성공적으로 복원했습니다.');
+        } catch (err) {
+          showToast('올바른 백업 JSON 파일이 아닙니다.', 'error');
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function resetToDefaultData() {
+      if (!confirm('초기 업무분장 기준 데이터로 되돌리시겠습니까? (임원 비밀번호 설정은 유지됩니다)')) return;
+      const keepPins = appState.pins || {};
+      appState = {
+        kpis: safeClone(DEFAULT_KPIS),
+        logs: safeClone(DEFAULT_LOGS),
+        board: safeClone(DEFAULT_BOARD),
+        pins: keepPins,
+        updatedAt: new Date().toISOString()
+      };
+      persistState(true);
+    }
+
+    function switchTab(tabName) {
+      document.querySelectorAll('.tab-panel').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('border-[#1B365D]', 'bg-white', 'text-[#1B365D]', 'font-bold');
+        btn.classList.add('border-transparent', 'text-slate-600', 'font-semibold');
+      });
+
+      document.getElementById(`tabPanel-${tabName}`).classList.remove('hidden');
+      const activeBtn = document.getElementById(`tabBtn-${tabName}`);
+      activeBtn.classList.add('border-[#1B365D]', 'bg-white', 'text-[#1B365D]', 'font-bold');
+      activeBtn.classList.remove('border-transparent', 'text-slate-600', 'font-semibold');
+    }
+
+    function showToast(msg, type = 'success') {
+      const container = document.getElementById('toastContainer');
+      const div = document.createElement('div');
+      div.className = `px-4 py-2.5 rounded-xl shadow-lg text-xs font-bold text-white transition transform ${type === 'error' ? 'bg-rose-600' : 'bg-[#1B365D]'}`;
+      div.textContent = msg;
+      container.appendChild(div);
+      setTimeout(() => div.remove(), 3200);
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => {
+        loadInitialData();
+        syncTimer = setInterval(() => pullFromCloud(true), 15000);
+      });
+    } else {
+      loadInitialData();
+      syncTimer = setInterval(() => pullFromCloud(true), 15000);
+    }
+  </script>
+</body>
+</html>
